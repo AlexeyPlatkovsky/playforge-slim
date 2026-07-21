@@ -10,7 +10,7 @@ Sequence the creation of a new test from request to verified closure. This file 
 
 ## Sequence
 1. **Clarify test scope** — follow `instructions/skills/clarify-test-scope.md`. Before advancing, verify the output artifact `Skill: clarify-test-scope - output below` is present.
-2. **Craft test cases** — follow `instructions/skills/craft-test-cases.md`. Before advancing, verify the output artifact `Skill: craft-test-cases - output below` is present.
+2. **Load crafted test cases** — read the `test-cases/<feature-slug>.md` file named in the request; do not continue until its case table is loaded. If the request names no crafted file, run the craft-test-cases pipeline first — create-test does not derive scenarios itself.
 3. **Implement** — follow `instructions/skills/implement-test.md`. Before advancing, verify the output artifact `Skill: implement-test - output below` is present.
 4. **Review** — run `instructions/agents/test-reviewer.md` on the changed spec. Before advancing, verify the output artifact `Agent: test-reviewer - output below` is present and the verdict is `approve`.
 5. **Close** — follow `instructions/skills/task-complete.md`. Before advancing, verify the output artifact `Skill: task-complete - output below` is present.
