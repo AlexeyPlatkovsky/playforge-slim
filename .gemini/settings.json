@@ -3,6 +3,7 @@
     "fileName": "AGENTS.md"
   },
   "general": {
-    "defaultApprovalMode": "auto_edit"
+    "defaultApprovalMode": "auto_edit",
+    "fileName": ["AGENTS.md"]
   }
 }

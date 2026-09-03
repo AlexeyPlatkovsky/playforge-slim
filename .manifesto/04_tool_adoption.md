@@ -1,5 +1,5 @@
 ---
-version: 2.5.1
+version: 2.10.0
 project: agent-manifest
 url: https://github.com/AlexeyPlatkovsky/agent-manifest/blob/main/04_tool_adoption.md
 ---
@@ -75,7 +75,7 @@ Do not propose solutions yet.
 Decide how every foreign artifact maps into the project.
 
 For each foreign skill, pipeline, or agent the tool ships, choose exactly one disposition:
-- translate: create a standalone project capability in the correct layer with the tool's mandatory behavior plus minimal project-specific adaptation, then discard the foreign artifact
+- translate: create a standalone project capability in the correct layer with the tool's mandatory behavior plus minimal project-specific adaptation, then discard the foreign artifact. For an execution capability, place it as a skill or an agent per `conventions/skill-vs-agent.md` based on how it must run in this project, not on how the tool shipped it
 - reference: link it as external documentation when the behavior is not needed as a first-class capability
 - discard: remove entirely when the project has no real use for it
 
@@ -114,8 +114,10 @@ Stage-specific rules:
 - translate retained foreign capabilities into standalone project artifacts under the correct project layer
 - do not keep the tool's foreign instruction bundle inside the project instruction system
 - route new capabilities through the existing manager-equivalent when the project has one
+- apply `conventions/traceability.md` to every translated capability that gates downstream non-trivial routed work
 - update the applicable root contract and capability registry with each new capability
 - after creating or updating project-local instruction artifacts, verify the project-local instruction-evaluator agent exists, then use it to review those artifacts before final acceptance
+- verify the project-local artifact-acceptance-tester agent exists when its trigger applies, then use it to run 9 scenario tests for each new or materially changed runtime instruction artifact before final acceptance
 
 ---
 

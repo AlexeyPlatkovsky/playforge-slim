@@ -1,5 +1,5 @@
 ---
-version: 2.5.1
+version: 2.10.0
 project: agent-manifest
 url: https://github.com/AlexeyPlatkovsky/agent-manifest/blob/main/03_capability_expansion.md
 ---
@@ -133,7 +133,7 @@ For each proposed addition, provide:
 - purpose
 - what user-described need justifies it
 - what existing artifacts it depends on
-- why it belongs in that layer
+- why it belongs in that layer, and for an execution capability why it is a skill or an agent per `conventions/skill-vs-agent.md`
 
 Include mandatory protocol-derived capabilities, mandatory copied agents, and compliance fixes in the proposed delta before asking for approval.
 
@@ -156,8 +156,10 @@ Apply `IMPLEMENTATION.md` §Stage Standards §Composition Anchor.
 Stage-specific rules:
 - for every present mandatory protocol trigger, reuse an exact existing project capability or materialize the required standalone project capability before any optional addition
 - for every present mandatory agent template trigger, reuse an exact existing project-local agent or copy the required template before accepting new instruction artifacts
+- apply `conventions/traceability.md` to every new or changed non-trivial routed handoff
 - if an existing capability or agent is close but non-equivalent, stop and ask whether to split, preserve, replace, or add another artifact
 - verify the project-local instruction-evaluator agent exists, then use it to review new or changed instruction artifacts before final acceptance
+- verify the project-local artifact-acceptance-tester agent exists when its trigger applies, then use it to run 9 scenario tests for each new or materially changed runtime instruction artifact before final acceptance
 - preserve existing good artifacts unless the user approved changes
 - update the root contract's capability registry section, or the project's existing separate registry if one exists, with each new capability
 

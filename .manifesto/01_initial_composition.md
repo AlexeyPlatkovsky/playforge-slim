@@ -1,5 +1,5 @@
 ---
-version: 2.5.1
+version: 2.10.0
 project: agent-manifest
 url: https://github.com/AlexeyPlatkovsky/agent-manifest/blob/main/01_initial_composition.md
 ---
@@ -116,8 +116,11 @@ Identify repeated non-trivial task types that may justify pipelines.
 
 For each candidate, classify provisionally whether it is:
 - a direct task that needs no pipeline
-- an atomic skill
+- a skill that runs in the working context
+- an agent that runs in an isolated context with a defined input and output
 - a pipeline with distinct ordered steps, validation, or review gates
+
+For any execution candidate, note provisionally whether it is a skill or an agent per `conventions/skill-vs-agent.md`.
 
 Do not decide what to create yet.
 
@@ -201,6 +204,7 @@ Apply `IMPLEMENTATION.md` §Stage Standards §Composition Anchor, plus §Capabil
 
 Stage-specific reminders:
 - verify the chosen tool's native entrypoint convention against current official docs during composition; if current official docs cannot be accessed or the entrypoint cannot be verified, stop and ask the user for an authoritative source or approval to defer that tool-specific composition
+- before writing any execution capability, classify it explicitly as a skill or an agent per `conventions/skill-vs-agent.md`, and state the decision and its justification out loud before creating the file
 - use `pipeline` terminology consistently
 - apply `conventions/tool-adapters.md` to every tool-specific entry file
 - if repeated software task types such as feature implementation, task review, or anything else have distinct ordered steps, create separate pipelines for them instead of representing them only as skills
@@ -210,6 +214,10 @@ Stage-specific reminders:
 ### Layer Purity
 
 Apply `conventions/layer-purity.md` to every file written in this stage.
+
+### Traceability
+
+Apply `conventions/traceability.md` to generated non-trivial routed handoffs, manager-equivalents, validation gates, documentation maintenance capabilities, acceptance-review agents, and completion capabilities.
 
 ### Skill Extraction Precondition For Pipelines
 
@@ -231,6 +239,13 @@ Use the protocol filename basename as the default capability name only when the 
 ### Agent-Template-Derived Capabilities
 
 Derive required project-local agents from agent template frontmatter per `conventions/capability-derivation.md`.
+
+### Instruction Artifact Acceptance
+
+Before final acceptance, verify the project-local instruction-evaluator and artifact-acceptance-tester agents exist when their triggers apply.
+
+Use `instruction-evaluator` to review new or changed instruction artifacts.
+Use `artifact-acceptance-tester` to run 9 scenario tests for each new or materially changed skill, pipeline, agent, manager-equivalent routing artifact, validation gate, or output contract.
 
 ### Scope Boundaries
 
@@ -283,4 +298,5 @@ The final system must:
 - preserve good existing project capabilities where possible
 - keep routing centralized in the root contract or manager-equivalent artifact
 - pass `conventions/layer-purity.md`
+- pass instruction artifact evaluation and acceptance testing when their triggers apply
 - contain no pipeline whose skills do not yet exist

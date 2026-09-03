@@ -1,5 +1,5 @@
 ---
-version: 2.5.1
+version: 2.10.0
 project: agent-manifest
 url: https://github.com/AlexeyPlatkovsky/agent-manifest/blob/main/IMPLEMENTATION.md
 ---
@@ -114,14 +114,16 @@ If a project already stores capabilities elsewhere, migration is a structural re
 
 ## Skills
 
-Skills are atomic execution capabilities.
+A skill is a reusable capability — a behavior, procedure, or action pattern an agent uses to solve part of a task. A skill runs in the main agent's working context, shares that context, and may interact with the user as the work proceeds.
 
 Rules:
 - one responsibility
+- runs in the working context; may interact with the user mid-task
 - no orchestration logic
 - no cross-skill routing
 - no duplicated root policy
 - standalone project-local behavior
+- a visible output contract when the skill's result gates another step in non-trivial routed work
 
 ## Pipelines
 
@@ -132,6 +134,7 @@ Rules:
 - reference skills or agents
 - do not redefine skill behavior
 - include validation for non-trivial work
+- require each non-trivial routed handoff's visible output artifact before the next step treats it as complete
 - use one file per pipeline when more than one pipeline exists or when a pipeline is substantial
 - create a pipeline when a repeated task type is non-trivial and has a distinct ordered execution path
 - do not collapse distinct workflows into one generic pipeline when their steps, validation, or review gates differ
@@ -140,15 +143,24 @@ For software projects, common pipeline candidates include feature implementation
 
 ## Agents
 
-Agents are specialized roles used only when context isolation or specialized reasoning is clearly justified.
+An agent is a responsible actor with a clearly defined input and output that runs in an isolated context. An agent does not share the main conversation's context and does not hold multi-turn dialogue with the user; it receives its input, runs to completion, and returns its result.
 
 Rules:
+- runs in an isolated context with a defined input and output
+- runs to completion without live, multi-turn user interaction
 - do not create a default agent layer without evidence of need
 - mandatory framework agent templates with a present `requires_when` trigger are evidence of need
 - keep agent responsibilities distinct from skills and pipelines
-- use agents for isolation, specialization, or parallel responsibility, not decoration
+- use agents for isolation, an independent unbiased pass, or parallel responsibility, not decoration
 - copy mandatory framework agent templates into every generated landscape where their trigger applies
 - preserve the template's responsibility and output contract when adapting to a tool-specific agent format
+- use the artifact acceptance tester after materially changing runtime instruction artifacts and before accepting them
+
+## Skill Versus Agent
+
+A skill and an agent are different kinds of execution capability, distinguished by context locality. Which one a capability is must be decided deliberately whenever an execution capability is created or audited.
+
+Apply `conventions/skill-vs-agent.md`.
 
 ## Conventions
 
@@ -177,6 +189,12 @@ Rules:
 - docs inform but do not enforce behavior
 
 Apply `conventions/reference-docs.md`.
+
+## Traceability
+
+Routed execution must be auditable from visible conversation artifacts, not inferred from private agent state.
+
+Apply `conventions/traceability.md`.
 
 ## Layer Purity
 
@@ -237,19 +255,21 @@ Translate this matrix into mandatory gate language in the root contract. Do not 
 
 Implementation:
 - root contract: policy and routing gates
-- skill: atomic task execution
+- skill: reusable capability run in the main agent's working context
 - pipeline: ordered orchestration
-- agent: specialized role or isolated context
+- agent: responsible actor with a defined input and output run in an isolated context
 - convention: shared standard
 - reference doc: reusable project knowledge
+
+Skills and agents are distinguished by context locality, not by how much they reason. Apply `conventions/skill-vs-agent.md`.
 
 If a file grows because it is doing too many jobs, split it rather than expanding it indefinitely.
 
 Decision and execution boundaries:
 - put classification, routing gates, constraints, and required outputs in the root contract
-- put task procedures in skills
+- put task procedures in skills, which run in the working context
 - put sequencing in pipelines
-- put specialized role behavior in agents
+- put isolated-context, defined-input-and-output responsibilities in agents
 - keep project knowledge in docs and shared standards in conventions
 
 Execution skills must not contain manager handoff text, stage metadata, or routing to other skills.
@@ -301,6 +321,7 @@ Compliant pattern:
 - classify the task first
 - if trivial: proceed directly and state the classification
 - if non-trivial: stop, load the concrete routing capability, and do not implement until routing resolves
+- loading the routing capability is not enough; non-trivial work may begin only after the routing capability emits its visible output artifact
 - if unsure: treat as non-trivial
 - classification must be stated out loud before any file is created, edited, or deleted; a silent mental check does not satisfy the gate
 - when a conversation begins as discussion or design and the user signals to proceed ("go ahead", "do it", "implement it", "fix it", or equivalent), treat that signal as a fresh routing gate trigger, not as permission to skip classification
@@ -310,6 +331,8 @@ Validation is mandatory for non-trivial routed work:
 - stronger review loops apply only for higher-risk work
 - validation should be automated and repeatable where possible
 - validation is a required check unless a project explicitly creates a concrete validation skill, pipeline step, or convention
+- raw command output does not satisfy a validation gate unless the validation capability emits its visible output artifact
+- validation artifacts must state pass, fail, skipped, or blocked for each declared validation gate
 - `task-complete` is the required closure skill for non-trivial routed work
 - `task-complete` enforcement should be centralized in the root contract or manager-equivalent artifact, not repeated across execution skills
 
@@ -343,6 +366,8 @@ Each protocol body must define:
 - allowed project-specific adaptations
 - output contracts, when other capabilities or validation depend on this one's result
 
+Output contracts that gate downstream non-trivial routed work must follow `conventions/traceability.md`.
+
 ## Capability Derivation
 
 Apply `conventions/capability-derivation.md`.
@@ -365,16 +390,17 @@ Prefer the smallest coherent system that satisfies the triggers actually present
 
 Use these triggers:
 - any AI landscape: instruction-evaluator agent
+- new or materially changed skills, pipelines, agents, manager-equivalent routing, validation gates, or output contracts: artifact-acceptance-tester agent
 - multiple AI tools or AI-agnostic portability need: root contract plus thin adapters
 - open design decisions or setup/profile clarification choices with trade-offs: brainstorming capability
 - non-trivial routed work: explicit validation check and task-complete capability
 - feature implementation, refactoring, or non-trivial bug fix that changes project behavior, structure, commands, contracts, workflows, domain facts, or known failure modes: documentation maintenance capability
 - routing must choose between multiple skills, pipelines, or agents: manager-equivalent capability
 - repeated multi-step workflow or repeated non-trivial task type with distinct steps: pipeline
-- repeated task type: skill
+- repeated task type that runs in the working context: skill (apply `conventions/skill-vs-agent.md`)
 - repeated behavior across skills or agents: project convention
 - reusable project facts such as architecture, commands, domain vocabulary, or source locations: reference doc
-- context isolation or specialized reasoning need: agent
+- isolated-context work with a defined input and output, or an independent unbiased pass: agent (apply `conventions/skill-vs-agent.md`)
 - high-risk or system-level work: stronger review and validation gates
 
 Do not create managers, pipelines, agents, conventions, or docs by default. Create them only when a concrete trigger exists.

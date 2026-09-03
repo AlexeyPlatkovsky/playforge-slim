@@ -15,6 +15,7 @@ export interface SignupIdentity {
 
 export class LoginPage extends xPage {
   readonly header = new SiteHeaderComponent(this.$("header"));
+  readonly loginError = this.$("text=Your email or password is incorrect");
   readonly loginButton = this.$("[data-qa='login-button']");
   readonly loginEmail = this.$("[data-qa='login-email']");
   readonly loginPassword = this.$("[data-qa='login-password']");

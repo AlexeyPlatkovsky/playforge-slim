@@ -1,5 +1,5 @@
 ---
-version: 2.5.1
+version: 2.10.0
 project: agent-manifest
 url: https://github.com/AlexeyPlatkovsky/agent-manifest/blob/main/agents/_README.md
 ---
@@ -19,6 +19,14 @@ This file is an index and is not an agent template or derivation input.
 
 ## Current Agents
 
+### `artifact-acceptance-tester.md`
+
+Scenario-based acceptance test agent for new or materially changed instruction artifacts before they are accepted.
+
 ### `instruction-evaluator.md`
 
 Read-only review agent for instruction artifacts before they are accepted into a project instruction system.
+
+### `test-system-kit/`
+
+A project- and tech-agnostic bundle for building a standing drift-test system for a project's AI capabilities. Contains the `test-system-builder` skill, the `test-system-auditor` agent, the scenario card schema convention, and the runner-agent template. See `test-system-kit/README.md`.

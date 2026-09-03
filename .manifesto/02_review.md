@@ -1,5 +1,5 @@
 ---
-version: 2.5.1
+version: 2.10.0
 project: agent-manifest
 url: https://github.com/AlexeyPlatkovsky/agent-manifest/blob/main/02_review.md
 ---
@@ -89,6 +89,7 @@ Audit-specific red flags:
 - the same behavioral requirement has multiple owners
 - routing gates are descriptive instead of blocking
 - risky changes are proposed without naming required user approval
+- an execution capability is misclassified against `conventions/skill-vs-agent.md`: an agent does work that needs multi-turn user interaction, or a skill does work that needs an isolated context or an independent unbiased pass
 
 ### Protocol Inventory and Applicability
 
@@ -122,6 +123,7 @@ For each required framework agent template, verify:
 - the agent remains on demand instead of being inlined into an always-loaded root contract or adapter
 - the root contract or manager-equivalent can route applicable work to it
 - for `instruction-evaluator`, instruction-artifact review work routes to it
+- for `artifact-acceptance-tester`, new or materially changed runtime instruction artifacts route to it before final acceptance
 
 Flag as a major violation if a required framework agent is missing or if its full instructions are copied into always-loaded context.
 
@@ -161,6 +163,23 @@ Check for:
 - does every non-trivial pipeline include explicit validation
 - is `task-complete` enforced for non-trivial routed work
 - are stronger review loops reserved for higher-risk work
+- do validation steps emit visible output artifacts instead of relying on raw command output
+- do validation artifacts state pass, fail, skipped, or blocked for each declared validation gate
+- does the manager-equivalent require a visible output artifact before advancing across each non-trivial routed handoff
+- does `task-complete` require artifact references for each required planned routed handoff before closure
+- are new or materially changed skills, pipelines, agents, manager-equivalent routing artifacts, validation gates, and output contracts acceptance-tested before final acceptance
+
+### Traceability
+
+Apply `conventions/traceability.md`.
+
+Verify that non-trivial routed handoffs, manager decisions, validation steps, documentation maintenance, agent acceptance reviews, and task completion define grep-able output artifacts.
+
+Flag as a major violation when:
+- a non-trivial routed handoff can be treated as complete without emitting its artifact
+- raw tool output can substitute for a skill or validation output contract
+- the manager-equivalent can advance across routed handoffs from memory
+- task completion can self-attest that planned routed handoffs ran without referencing their artifacts
 
 ---
 
@@ -191,8 +210,10 @@ Provide:
 List findings by severity with file references.
 Prioritize:
 - critical routing failures
+- missing or unenforceable output artifacts for non-trivial routed work
 - incorrect root contract model
 - duplicated or blurred responsibilities
+- skill/agent misclassification against `conventions/skill-vs-agent.md`
 - layer purity failures
 - protocol coverage failures
 - agent template coverage failures

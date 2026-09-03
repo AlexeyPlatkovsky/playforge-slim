@@ -9,6 +9,7 @@ export class HomePage extends xPage {
   readonly featuredProducts = new ProductsCatalogComponent(this.$(".features_items"));
   readonly header = new SiteHeaderComponent(this.$("header"));
   readonly heroHeading = this.$(".carousel-inner .item.active h1");
+  readonly loginSuccessMessage = this.$("text=You successfully logged in");
   readonly path = "/";
   readonly subscription = new SubscriptionFooterComponent(this.$("footer"));
 
